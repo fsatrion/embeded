@@ -53,42 +53,74 @@ pre {
 <body>
   <div class="wrapper">
     <pre>
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
 metadata:
-  name: backend-ingress
+  name: backend-virtualservice
   namespace: app-1
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://doamin.id"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type"
-    nginx.ingress.kubernetes.io/cors-expose-headers: "Authorization"
-    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
-    nginx.ingress.kubernetes.io/compute-full-forwarded-for: "true"
-    nginx.ingress.kubernetes.io/real-ip-header: "X-Forwarded-For"
   labels:
     tier: backend
 spec:
-  ingressClassName: nginx
-  rules:
-    - host: domain-be.id
-      http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: aaa-service
-              port:
-                  number: 3000
-        - path: /api/
-          pathType: Prefix
-          backend:
-            service:
-              name: bbb-service
-              port:
-                  number: 8080
+  hosts:
+  - "domain-be.id"
+  gateways:
+  - backend-gateway
+  http:
+  # Route for /api/ path - must come first (more specific)
+  - match:
+    - uri:
+        prefix: /api/
+    route:
+    - destination:
+        host: backend-service.app-1.svc.cluster.local
+        port:
+          number: 8080
+    corsPolicy:
+      allowOrigins:
+      - exact: "https://doamin.id"
+      allowMethods:
+      - GET
+      - POST
+      - OPTIONS
+      allowHeaders:
+      - Authorization
+      - Content-Type
+      exposeHeaders:
+      - Authorization
+      allowCredentials: true
+    headers:
+      request:
+        set:
+          X-Forwarded-For: "%DOWNSTREAM_REMOTE_ADDRESS%"
+    timeout: 0s  # Equivalent to proxy-body-size: "0" (no timeout)
+  
+  # Route for / path - must come after more specific paths
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: aaa-service.app-1.svc.cluster.local
+        port:
+          number: 3000
+    corsPolicy:
+      allowOrigins:
+      - exact: "https://doamin.id"
+      allowMethods:
+      - GET
+      - POST
+      - OPTIONS
+      allowHeaders:
+      - Authorization
+      - Content-Type
+      exposeHeaders:
+      - Authorization
+      allowCredentials: true
+    headers:
+      request:
+        set:
+          X-Forwarded-For: "%DOWNSTREAM_REMOTE_ADDRESS%"
+    timeout: 0s
     </pre>
   </div>
 </body>
