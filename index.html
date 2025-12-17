@@ -1,27 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scrollable Code</title>
+
 <style>
-body {
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+
+/* Page */
+html, body {
+  height: 100%;
   margin: 0;
   background: #0b1020;
-}
-pre {
-  max-height: 1920px;
-  overflow-y: auto;
-  padding: 14px;
   color: #e5e7eb;
-  font-family: monospace;
-  font-size: 13px;
-  line-height: 1.4;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Container adapts to iframe size */
+.wrapper {
+  height: 100%;
+  padding: 12px;
+  display: flex;
+}
+
+/* Scrollable code block */
+pre {
+  flex: 1;
+  margin: 0;
+  padding: 14px;
+  background: #0f172a;
+  border-radius: 8px;
+  overflow: auto;
+  font-size: clamp(12px, 1.2vw, 14px);
+  line-height: 1.5;
   white-space: pre;
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  pre {
+    padding: 10px;
+    border-radius: 6px;
+  }
 }
 </style>
 </head>
+
 <body>
-<pre>
+  <div class="wrapper">
+    <pre>
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -58,7 +89,7 @@ spec:
               name: bbb-service
               port:
                   number: 8080
-
-</pre>
+    </pre>
+  </div>
 </body>
 </html>
