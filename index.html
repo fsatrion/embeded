@@ -1,3 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Scrollable Code</title>
+<style>
+body {
+  margin: 0;
+  background: #0b1020;
+}
+pre {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 14px;
+  color: #e5e7eb;
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre;
+}
+</style>
+</head>
+<body>
+<pre>
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -34,3 +58,7 @@ spec:
               name: bbb-service
               port:
                   number: 8080
+
+</pre>
+</body>
+</html>
